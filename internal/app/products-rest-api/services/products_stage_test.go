@@ -1,10 +1,9 @@
-package test
+package services
 
 import (
 	"testing"
 
 	"github.com/pippo/products-rest-api/internal/app/products-rest-api/models"
-	"github.com/pippo/products-rest-api/internal/app/products-rest-api/services"
 	"github.com/pippo/products-rest-api/internal/app/products-rest-api/storage"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -13,7 +12,7 @@ import (
 type testStage struct {
 	t       *testing.T
 	storage storage.ProductStorage
-	service *services.ProductService
+	service *ProductService
 	result  []models.DiscountedProduct
 	product models.DiscountedProduct
 }
@@ -23,7 +22,7 @@ func NewTestStage(t *testing.T) (*testStage, *testStage, *testStage) {
 		t:       t,
 		storage: storage.NewInMemoryProductStorage(),
 	}
-	stage.service = services.NewProductService(stage.storage)
+	stage.service = NewProductService(stage.storage)
 	return &stage, &stage, &stage
 }
 
@@ -49,13 +48,13 @@ func (s *testStage) list_of_products_is_retrieved() {
 
 func (s *testStage) list_of_products_is_retrieved_with_category_filter(cat models.Category) {
 	var err error
-	s.result, err = s.service.ListProducts(services.ProductFilterCriteria{Category: cat})
+	s.result, err = s.service.ListProducts(ProductFilterCriteria{Category: cat})
 	require.NoError(s.t, err)
 }
 
 func (s *testStage) list_of_products_is_retrieved_with_price_filter(maxPrice models.Price) {
 	var err error
-	s.result, err = s.service.ListProducts(services.ProductFilterCriteria{MaxPrice: maxPrice})
+	s.result, err = s.service.ListProducts(ProductFilterCriteria{MaxPrice: maxPrice})
 	require.NoError(s.t, err)
 }
 
