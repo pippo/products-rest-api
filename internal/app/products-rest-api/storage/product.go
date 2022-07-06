@@ -3,6 +3,7 @@ package storage
 import (
 	"fmt"
 
+	sq "github.com/Masterminds/squirrel"
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/pippo/products-rest-api/internal/app/products-rest-api/models"
@@ -57,13 +58,26 @@ func (s *MySQLProductStorage) Add(product models.Product) error {
 func (s *MySQLProductStorage) ListProducts(category models.Category, maxPrice models.Price, limit int) ([]models.Product, error) {
 	db, err := dbConn()
 	if err != nil {
-		return nil, fmt.Errorf("failed to list products: %w", err)
+		return nil, fmt.Errorf("failed to init DB connection: %w", err)
 	}
 	defer db.Close()
 
-	rs, err := db.Query("SELECT sku, category, pname, price FROM products")
+	q := sq.Select("sku, category, pname, price").From("products").Limit(uint64(limit))
+	if category != "" {
+		q = q.Where(sq.Eq{"category": category})
+	}
+	if maxPrice != 0 {
+		q = q.Where(sq.Lt{"price": maxPrice})
+	}
+
+	sql, args, err := q.ToSql()
 	if err != nil {
-		return nil, fmt.Errorf("failed to list products: %w", err)
+		return nil, fmt.Errorf("failed to generate SQL query: %w", err)
+	}
+
+	rs, err := db.Query(sql, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to run SQL query: %w", err)
 	}
 
 	result := []models.Product{}

@@ -26,7 +26,6 @@ func (a *ProductsRestAPIApp) Configure() {
 func (a *ProductsRestAPIApp) Run() {
 	router := gin.Default()
 	router.Use(gin.Recovery())
-	router.Use(gin.Logger())
 
 	ctrl := controllers.NewProductsController(a.ProductService)
 	router.GET("/products", ctrl.HandleListProducts)
