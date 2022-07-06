@@ -15,7 +15,7 @@ func TestApplyDiscount_Happy(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, models.Price(1000), dp.Price.Original)
 	assert.Equal(t, models.Price(900), dp.Price.Final)
-	assert.Equal(t, models.Percentage("10%"), dp.Price.DiscountPercentage)
+	assert.Equal(t, models.Percentage("10%"), *dp.Price.DiscountPercentage)
 }
 
 func TestApplyDiscount_Zero(t *testing.T) {
@@ -25,7 +25,7 @@ func TestApplyDiscount_Zero(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, models.Price(1000), dp.Price.Original)
 	assert.Equal(t, models.Price(1000), dp.Price.Final)
-	assert.Equal(t, models.Percentage("0%"), dp.Price.DiscountPercentage)
+	assert.Nil(t, dp.Price.DiscountPercentage)
 }
 
 func TestApplyDiscount_Negative(t *testing.T) {

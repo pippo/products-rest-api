@@ -26,7 +26,7 @@ func Test_ListingProducts_Simple(t *testing.T) {
 		the_product_category_should_be(models.Category("boots")).and().
 		the_product_original_price_should_be(models.Price(89000)).and().
 		the_product_final_price_should_be(models.Price(89000)).and().
-		the_product_discount_should_be(models.Percentage("0%")).and().
+		the_product_discount_should_be_empty().and().
 		the_product_price_currency_should_be(models.CurrencyEUR).and().
 		the_product_name_should_be(models.Name("BV Lean leather ankle boots"))
 }

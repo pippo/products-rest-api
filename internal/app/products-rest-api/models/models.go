@@ -24,10 +24,10 @@ type Product struct {
 }
 
 type PriceWithDiscount struct {
-	Original           Price      `json:"original"`
-	Final              Price      `json:"final"`
-	DiscountPercentage Percentage `json:"discount_percentage"`
-	Currency           Currency   `json:"currency"`
+	Original           Price       `json:"original"`
+	Final              Price       `json:"final"`
+	DiscountPercentage *Percentage `json:"discount_percentage"`
+	Currency           Currency    `json:"currency"`
 }
 
 type DiscountedProduct struct {
@@ -55,6 +55,13 @@ func (p *Product) ApplyDiscount(dv DiscountValue) (*DiscountedProduct, error) {
 	}
 
 	finalPrice := Price(int(p.Price) * (100 - int(dv)) / 100)
+
+	var discountPercentage *Percentage
+	if dv != 0 {
+		percentage := Percentage(fmt.Sprintf("%d%%", dv))
+		discountPercentage = &percentage
+	}
+
 	return &DiscountedProduct{
 		SKU:      p.SKU,
 		Category: p.Category,
@@ -62,7 +69,7 @@ func (p *Product) ApplyDiscount(dv DiscountValue) (*DiscountedProduct, error) {
 		Price: PriceWithDiscount{
 			Original:           p.Price,
 			Final:              finalPrice,
-			DiscountPercentage: Percentage(fmt.Sprintf("%d%%", dv)),
+			DiscountPercentage: discountPercentage,
 			Currency:           CurrencyEUR,
 		},
 	}, nil

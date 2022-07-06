@@ -117,6 +117,12 @@ func (s *productTestStage) the_product_price_currency_should_be(cur models.Curre
 
 func (s *productTestStage) the_product_discount_should_be(discount models.Percentage) *productTestStage {
 	require.NotEmpty(s.t, s.product)
-	assert.Equal(s.t, s.product.Price.DiscountPercentage, discount)
+	assert.Equal(s.t, discount, *s.product.Price.DiscountPercentage)
+	return s
+}
+
+func (s *productTestStage) the_product_discount_should_be_empty() *productTestStage {
+	require.NotEmpty(s.t, s.product)
+	assert.Nil(s.t, s.product.Price.DiscountPercentage)
 	return s
 }
