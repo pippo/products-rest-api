@@ -5,9 +5,8 @@ import (
 	"fmt"
 )
 
-func ConnectToMySQL() (*sql.DB, error) {
-	// TODO: read credentials from ENV or Vault
-	db, err := sql.Open("mysql", "root:@tcp(db:3306)/products_rest_api")
+func ConnectToMySQL(host, port, user, pass string) (*sql.DB, error) {
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/products_rest_api", user, pass, host, port))
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to DB: %w", err)
 	}

@@ -1,6 +1,8 @@
 package app
 
 import (
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pippo/products-rest-api/internal/app/products-rest-api/controllers"
 	"github.com/pippo/products-rest-api/internal/app/products-rest-api/services"
@@ -16,7 +18,12 @@ func New() *ProductsRestAPIApp {
 }
 
 func (a *ProductsRestAPIApp) Configure() error {
-	db, err := storage.ConnectToMySQL()
+	mysqlHost := getEnvOrDefault("DB_HOST", "localhost")
+	mysqlPort := getEnvOrDefault("DB_PORT", "3306")
+	mysqlUser := getEnvOrDefault("DB_USER", "root")
+	mysqlPass := getEnvOrDefault("DB_PASSWORD", "")
+
+	db, err := storage.ConnectToMySQL(mysqlHost, mysqlPort, mysqlUser, mysqlPass)
 	if err != nil {
 		return err
 	}
@@ -38,4 +45,12 @@ func (a *ProductsRestAPIApp) Run() {
 	router.GET("/products", ctrl.HandleListProducts)
 
 	router.Run()
+}
+
+func getEnvOrDefault(name, def string) string {
+	val, ok := os.LookupEnv(name)
+	if !ok {
+		return def
+	}
+	return val
 }
