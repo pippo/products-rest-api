@@ -17,24 +17,24 @@ type DiscountValue int8
 type Percentage string
 
 type Product struct {
-	SKU      SKU
-	Name     Name
-	Category Category
-	Price    Price
+	SKU      SKU      `json:"sku"`
+	Name     Name     `json:"name"`
+	Category Category `json:"category"`
+	Price    Price    `json:"price"`
 }
 
 type PriceWithDiscount struct {
-	Original           Price
-	Final              Price
-	DiscountPercentage Percentage
-	Currency           Currency
+	Original           Price      `json:"original"`
+	Final              Price      `json:"final"`
+	DiscountPercentage Percentage `json:"discount_percentage"`
+	Currency           Currency   `json:"currency"`
 }
 
 type DiscountedProduct struct {
-	SKU      SKU
-	Name     Name
-	Category Category
-	Price    PriceWithDiscount
+	SKU      SKU               `json:"sku"`
+	Name     Name              `json:"name"`
+	Category Category          `json:"category"`
+	Price    PriceWithDiscount `json:"price"`
 }
 
 type Discount struct {

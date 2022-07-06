@@ -8,6 +8,8 @@ import (
 
 func main() {
 	router := gin.Default()
+	router.Use(gin.Recovery())
+	router.Use(gin.Logger())
 	router.GET("/products", controllers.HandleListProducts)
 	router.Run()
 }

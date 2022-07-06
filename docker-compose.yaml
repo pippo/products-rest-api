@@ -6,3 +6,14 @@ services:
       dockerfile: build/Dockerfile
     ports:
       - "8080:8080"
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0.29
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./build/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro

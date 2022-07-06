@@ -7,12 +7,17 @@ import (
 	"github.com/pippo/products-rest-api/internal/app/products-rest-api/models"
 	"github.com/pippo/products-rest-api/internal/app/products-rest-api/services"
 	"github.com/pippo/products-rest-api/internal/app/products-rest-api/storage"
+	"github.com/sirupsen/logrus"
 )
+
+type ProductListResponse struct {
+	Products []models.DiscountedProduct `json:"products"`
+}
 
 func HandleListProducts(c *gin.Context) {
 
 	// TODO: move to state
-	productStorage := storage.NewInMemoryProductStorage()
+	productStorage := storage.NewMySQLProductStorage()
 	discountStorage := storage.NewInMemoryDiscountStorage()
 	discountService := services.NewDiscountService(discountStorage)
 	svc := services.NewProductService(productStorage, discountService)
@@ -21,9 +26,10 @@ func HandleListProducts(c *gin.Context) {
 
 	products, err := svc.ListProducts(services.ProductFilterCriteria{Category: category})
 	if err != nil {
-		// TODO: proper handling
-		c.JSON(http.StatusInternalServerError, map[string]string{"message": "Something went wrong"})
+		logrus.WithError(err).Error("failed to list products")
+		c.JSON(http.StatusInternalServerError, map[string]string{"message": "Unknown error"})
+		return
 	}
 
-	_ = products
+	c.JSON(http.StatusOK, ProductListResponse{Products: products})
 }
