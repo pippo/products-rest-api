@@ -15,12 +15,19 @@ func New() *ProductsRestAPIApp {
 	return &ProductsRestAPIApp{}
 }
 
-func (a *ProductsRestAPIApp) Configure() {
-	productStorage := storage.NewMySQLProductStorage()
-	discountStorage := storage.NewMySQLDiscountStorage()
+func (a *ProductsRestAPIApp) Configure() error {
+	db, err := storage.ConnectToMySQL()
+	if err != nil {
+		return err
+	}
+
+	productStorage := storage.NewMySQLProductStorage(db)
+	discountStorage := storage.NewMySQLDiscountStorage(db)
 	discountService := services.NewDiscountService(discountStorage)
 
 	a.ProductService = services.NewProductService(productStorage, discountService)
+
+	return nil
 }
 
 func (a *ProductsRestAPIApp) Run() {

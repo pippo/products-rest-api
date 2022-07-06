@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/pippo/products-rest-api/internal/app/products-rest-api/models"
@@ -28,10 +29,12 @@ func (s *InMemoryDiscountStorage) LoadAll() ([]models.Discount, error) {
 	return s.storage, nil
 }
 
-type MySQLDiscountStorage struct{}
+type MySQLDiscountStorage struct {
+	db *sql.DB
+}
 
-func NewMySQLDiscountStorage() *MySQLDiscountStorage {
-	return &MySQLDiscountStorage{}
+func NewMySQLDiscountStorage(db *sql.DB) *MySQLDiscountStorage {
+	return &MySQLDiscountStorage{db: db}
 }
 
 func (s *MySQLDiscountStorage) Add(discount models.Discount) error {
@@ -40,13 +43,7 @@ func (s *MySQLDiscountStorage) Add(discount models.Discount) error {
 }
 
 func (s *MySQLDiscountStorage) LoadAll() ([]models.Discount, error) {
-	db, err := dbConn()
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to db: %w", err)
-	}
-	defer db.Close()
-
-	rs, err := db.Query("SELECT sku, category, percent FROM discounts")
+	rs, err := s.db.Query("SELECT sku, category, percent FROM discounts")
 	if err != nil {
 		return nil, fmt.Errorf("failed to query discounts: %w", err)
 	}

@@ -2,6 +2,8 @@ GO_IMAGE=golang:1.17-alpine3.16
 
 .PHONY: build up down test fixtures
 
+default: build
+
 docker-compose:
 	@which docker-compose > /dev/null || echo "Please install docker-compose as described at https://docs.docker.com/compose/install/"
 

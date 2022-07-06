@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"database/sql"
 	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
@@ -44,10 +45,12 @@ func (s *InMemoryProductStorage) ListProducts(category models.Category, maxPrice
 	return result, nil
 }
 
-type MySQLProductStorage struct{}
+type MySQLProductStorage struct {
+	db *sql.DB
+}
 
-func NewMySQLProductStorage() *MySQLProductStorage {
-	return &MySQLProductStorage{}
+func NewMySQLProductStorage(db *sql.DB) *MySQLProductStorage {
+	return &MySQLProductStorage{db: db}
 }
 
 func (s *MySQLProductStorage) Add(product models.Product) error {
@@ -56,12 +59,6 @@ func (s *MySQLProductStorage) Add(product models.Product) error {
 }
 
 func (s *MySQLProductStorage) ListProducts(category models.Category, maxPrice models.Price, limit int) ([]models.Product, error) {
-	db, err := dbConn()
-	if err != nil {
-		return nil, fmt.Errorf("failed to init DB connection: %w", err)
-	}
-	defer db.Close()
-
 	q := sq.Select("sku, category, pname, price").From("products").Limit(uint64(limit))
 	if category != "" {
 		q = q.Where(sq.Eq{"category": category})
@@ -75,7 +72,7 @@ func (s *MySQLProductStorage) ListProducts(category models.Category, maxPrice mo
 		return nil, fmt.Errorf("failed to generate SQL query: %w", err)
 	}
 
-	rs, err := db.Query(sql, args...)
+	rs, err := s.db.Query(sql, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to run SQL query: %w", err)
 	}
