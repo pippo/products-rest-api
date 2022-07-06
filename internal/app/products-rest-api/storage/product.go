@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"database/sql"
 	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -51,6 +50,7 @@ func NewMySQLProductStorage() *MySQLProductStorage {
 }
 
 func (s *MySQLProductStorage) Add(product models.Product) error {
+	// NOT implemented intentionally -- only used in tests
 	return nil
 }
 
@@ -77,13 +77,4 @@ func (s *MySQLProductStorage) ListProducts(category models.Category, maxPrice mo
 	}
 
 	return result, nil
-}
-
-func dbConn() (*sql.DB, error) {
-	// TODO: read credentials from ENV or Vault
-	db, err := sql.Open("mysql", "root:@tcp(db:3306)/products_rest_api")
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to DB: %w", err)
-	}
-	return db, nil
 }

@@ -18,7 +18,7 @@ func HandleListProducts(c *gin.Context) {
 
 	// TODO: move to state
 	productStorage := storage.NewMySQLProductStorage()
-	discountStorage := storage.NewInMemoryDiscountStorage()
+	discountStorage := storage.NewMySQLDiscountStorage()
 	discountService := services.NewDiscountService(discountStorage)
 	svc := services.NewProductService(productStorage, discountService)
 

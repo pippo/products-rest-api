@@ -31,3 +31,9 @@ make down
 ```
 make test
 ```
+
+### Importing test data
+
+```
+make fixtures
+```

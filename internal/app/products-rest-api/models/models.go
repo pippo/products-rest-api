@@ -47,9 +47,7 @@ const (
 	CurrencyEUR = "EUR"
 )
 
-var (
-	ErrDiscountOutOfBounds = fmt.Errorf("discount out of bounds")
-)
+var ErrDiscountOutOfBounds = fmt.Errorf("discount out of bounds")
 
 func (p *Product) ApplyDiscount(dv DiscountValue) (*DiscountedProduct, error) {
 	if dv < 0 || dv > 100 {

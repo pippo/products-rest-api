@@ -5,6 +5,7 @@ import (
 
 	"github.com/pippo/products-rest-api/internal/app/products-rest-api/models"
 	"github.com/pippo/products-rest-api/internal/app/products-rest-api/storage"
+	"github.com/sirupsen/logrus"
 )
 
 type DiscountService struct {
@@ -42,7 +43,9 @@ func (s *DiscountService) LookupDiscount(p models.Product) models.DiscountValue 
 	maxDiscount := models.DiscountValue(0)
 
 	if s.bySKU == nil {
-		s.init()
+		if err := s.init(); err != nil {
+			logrus.WithError(err).Warn("failed to init discounts, ignoring")
+		}
 	}
 
 	v, ok := s.byCategory[p.Category]

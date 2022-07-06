@@ -11,3 +11,11 @@ CREATE TABLE products(
     KEY (category),
     PRIMARY KEY (id)
 );
+
+CREATE TABLE discounts(
+    id INTEGER AUTO_INCREMENT,
+    sku VARCHAR(255) DEFAULT NULL,
+    category VARCHAR(20) DEFAULT NULL,
+    percent INTEGER NOT NULL,
+    PRIMARY KEY (id)
+);
