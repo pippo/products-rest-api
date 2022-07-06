@@ -1,5 +1,7 @@
 package models
 
+import "fmt"
+
 type SKU string
 
 type Name string
@@ -44,3 +46,26 @@ type Discount struct {
 const (
 	CurrencyEUR = "EUR"
 )
+
+var (
+	ErrDiscountOutOfBounds = fmt.Errorf("discount out of bounds")
+)
+
+func (p *Product) ApplyDiscount(dv DiscountValue) (*DiscountedProduct, error) {
+	if dv < 0 || dv > 100 {
+		return nil, fmt.Errorf("bad discount: %w: %d", ErrDiscountOutOfBounds, dv)
+	}
+
+	finalPrice := Price(int(p.Price) * (100 - int(dv)) / 100)
+	return &DiscountedProduct{
+		SKU:      p.SKU,
+		Category: p.Category,
+		Name:     p.Name,
+		Price: PriceWithDiscount{
+			Original:           p.Price,
+			Final:              finalPrice,
+			DiscountPercentage: Percentage(fmt.Sprintf("%d%%", dv)),
+			Currency:           CurrencyEUR,
+		},
+	}, nil
+}

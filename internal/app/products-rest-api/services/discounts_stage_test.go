@@ -13,7 +13,7 @@ type discountTestStage struct {
 	t       *testing.T
 	storage storage.DiscountStorage
 	service *DiscountService
-	result  *models.DiscountValue
+	result  models.DiscountValue
 }
 
 func NewDiscountTestStage(t *testing.T) (*discountTestStage, *discountTestStage, *discountTestStage) {
@@ -25,9 +25,14 @@ func NewDiscountTestStage(t *testing.T) (*discountTestStage, *discountTestStage,
 	return stage, stage, stage
 }
 
-func (s *discountTestStage) an_existing_discount(discount models.Discount) {
+func (s *discountTestStage) and() *discountTestStage {
+	return s
+}
+
+func (s *discountTestStage) an_existing_discount(discount models.Discount) *discountTestStage {
 	err := s.storage.Add(discount)
 	require.NoError(s.t, err)
+	return s
 }
 
 func (s *discountTestStage) a_discount_lookup_made_for(p models.Product) {
@@ -35,5 +40,5 @@ func (s *discountTestStage) a_discount_lookup_made_for(p models.Product) {
 }
 
 func (s *discountTestStage) the_resulting_discount_percentage_should_be(v models.DiscountValue) {
-	assert.Equal(s.t, &v, s.result)
+	assert.Equal(s.t, v, s.result)
 }

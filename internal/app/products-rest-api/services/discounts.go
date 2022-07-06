@@ -38,19 +38,22 @@ func (s *DiscountService) init() error {
 	return nil
 }
 
-func (s *DiscountService) LookupDiscount(p models.Product) *models.DiscountValue {
+func (s *DiscountService) LookupDiscount(p models.Product) models.DiscountValue {
+	maxDiscount := models.DiscountValue(0)
+
 	if s.bySKU == nil {
 		s.init()
 	}
 
 	v, ok := s.byCategory[p.Category]
 	if ok {
-		return &v
+		maxDiscount = v
 	}
 
 	v, ok = s.bySKU[p.SKU]
-	if ok {
-		return &v
+	if ok && v > maxDiscount {
+		maxDiscount = v
 	}
-	return nil
+
+	return maxDiscount
 }

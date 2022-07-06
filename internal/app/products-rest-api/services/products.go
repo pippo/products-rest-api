@@ -10,7 +10,8 @@ import (
 const ListMaxItems = 5
 
 type ProductService struct {
-	storage storage.ProductStorage
+	storage         storage.ProductStorage
+	discountService *DiscountService
 }
 
 type ProductFilterCriteria struct {
@@ -18,8 +19,11 @@ type ProductFilterCriteria struct {
 	MaxPrice models.Price
 }
 
-func NewProductService(storage storage.ProductStorage) *ProductService {
-	return &ProductService{storage: storage}
+func NewProductService(storage storage.ProductStorage, ds *DiscountService) *ProductService {
+	return &ProductService{
+		storage:         storage,
+		discountService: ds,
+	}
 }
 
 func (s *ProductService) ListProducts(filter ProductFilterCriteria) ([]models.DiscountedProduct, error) {
@@ -30,20 +34,15 @@ func (s *ProductService) ListProducts(filter ProductFilterCriteria) ([]models.Di
 		return result, fmt.Errorf("failed to list products: %w", err)
 	}
 
-	// TODO: apply discounts
 	for _, p := range products {
-		// TODO: add helper: func applyDiscount(Product, Discount) DiscountedProduct
-		result = append(result, models.DiscountedProduct{
-			SKU:      p.SKU,
-			Category: p.Category,
-			Name:     p.Name,
-			Price: models.PriceWithDiscount{
-				Original:           p.Price,
-				Final:              p.Price,
-				DiscountPercentage: "0%",
-				Currency:           models.CurrencyEUR,
-			},
-		})
+		dv := s.discountService.LookupDiscount(p)
+
+		dp, err := p.ApplyDiscount(dv)
+		if err != nil {
+			return nil, fmt.Errorf("failed to apply discount: %w", err)
+		}
+
+		result = append(result, *dp)
 	}
 
 	return result, nil

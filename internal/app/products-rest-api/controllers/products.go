@@ -12,8 +12,10 @@ import (
 func HandleListProducts(c *gin.Context) {
 
 	// TODO: move to state
-	storage := storage.NewInMemoryProductStorage()
-	svc := services.NewProductService(storage)
+	productStorage := storage.NewInMemoryProductStorage()
+	discountStorage := storage.NewInMemoryDiscountStorage()
+	discountService := services.NewDiscountService(discountStorage)
+	svc := services.NewProductService(productStorage, discountService)
 
 	category := models.Category("boots") // TODO: read from request
 

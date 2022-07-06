@@ -10,7 +10,7 @@ func Test_ListingProducts_Simple(t *testing.T) {
 	given, when, then := NewTestStage(t)
 
 	given.
-		a_product(models.Product{
+		an_existing_product(models.Product{
 			SKU:      "000001",
 			Name:     "BV Lean leather ankle boots",
 			Category: models.Category("boots"),
@@ -87,4 +87,25 @@ func Test_ListingProducts_Truncated(t *testing.T) {
 
 	then.
 		the_result_should_be_of_length(5)
+}
+
+func Test_ListingProducts_WithDiscount(t *testing.T) {
+	given, when, then := NewTestStage(t)
+
+	given.
+		an_existing_discount(models.Discount{SKU: "000001", Value: 10}).and().
+		a_list_of_products([]models.Product{
+			{SKU: "000001", Name: "BV Lean leather ankle boots", Category: models.Category("boots"), Price: models.Price(89000)},
+			{SKU: "000002", Name: "Naima embellished suede sandals", Category: models.Category("sandals"), Price: models.Price(79500)},
+			{SKU: "000003", Name: "Nathane leather sneakers", Category: models.Category("snickers"), Price: models.Price(59000)},
+		})
+
+	when.
+		list_of_products_is_retrieved()
+
+	then.
+		the_result_should_contain_product("000001").and().
+		the_product_original_price_should_be(models.Price(89000)).and().
+		the_product_final_price_should_be(models.Price(80100)).and().
+		the_product_discount_should_be(models.Percentage("10%"))
 }
