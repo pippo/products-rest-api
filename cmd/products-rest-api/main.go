@@ -1,15 +1,9 @@
 package main
 
-import (
-	"github.com/gin-gonic/gin"
-
-	"github.com/pippo/products-rest-api/internal/app/products-rest-api/controllers"
-)
+import app "github.com/pippo/products-rest-api/internal/app/products-rest-api"
 
 func main() {
-	router := gin.Default()
-	router.Use(gin.Recovery())
-	router.Use(gin.Logger())
-	router.GET("/products", controllers.HandleListProducts)
-	router.Run()
+	a := app.New()
+	a.Configure()
+	a.Run()
 }
