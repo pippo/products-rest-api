@@ -21,3 +21,6 @@ test:
 
 fixtures: docker-compose up
 	docker exec -i products-rest-api_db_1 mysql < build/testdata.sql
+
+clean: docker-compose
+	docker-compose down --rmi all -v
